@@ -200,6 +200,19 @@ This is the first working framework version. It is intentionally small: conventi
 
 ## Release
 
+Publish to npm first so `npx firescope@latest init my-app` can install the CLI:
+
+```sh
+npm login
+npm publish --access public
+```
+
+The package name `firescope` must be available on npm. If it is published successfully, users can run:
+
+```sh
+npx firescope@latest init my-app
+```
+
 Releases are created from version tags:
 
 ```sh

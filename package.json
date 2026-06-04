@@ -13,8 +13,11 @@
   },
   "homepage": "https://maskjelly.github.io/firescope/",
   "bin": {
-    "firescope": "./dist/cli/index.js",
-    "create-firescope": "./dist/create/index.js"
+    "firescope": "dist/cli/index.js",
+    "create-firescope": "dist/create/index.js"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "exports": {
     ".": {
@@ -36,6 +39,8 @@
   "scripts": {
     "build": "tsc",
     "check": "tsc --noEmit",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run check && npm test",
     "test": "npm run build && node --test tests/*.test.mjs"
   },
   "dependencies": {
