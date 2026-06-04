@@ -4,6 +4,14 @@
   "description": "A convention-first framework for Firebase apps, functions, hosting, environments, and deploys.",
   "type": "module",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maskjelly/firescope.git"
+  },
+  "bugs": {
+    "url": "https://github.com/maskjelly/firescope/issues"
+  },
+  "homepage": "https://maskjelly.github.io/firescope/",
   "bin": {
     "firescope": "./dist/cli/index.js",
     "create-firescope": "./dist/create/index.js"
@@ -27,7 +35,8 @@
   ],
   "scripts": {
     "build": "tsc",
-    "check": "tsc --noEmit"
+    "check": "tsc --noEmit",
+    "test": "npm run build && node --test tests/*.test.mjs"
   },
   "dependencies": {
     "dotenv": "^16.4.7",

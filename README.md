@@ -5,17 +5,17 @@ Firescope is a convention-first framework for Firebase apps. It keeps Firebase's
 ## Quick Start
 
 ```sh
-npm create firescope@latest my-app
+npx firescope@latest init my-app
 cd my-app
 npm install
-firescope connect
-firescope dev
+npx firescope connect
+npx firescope dev
 ```
 
 Deploy:
 
 ```sh
-firescope deploy
+npx firescope deploy
 ```
 
 ## App Shape
@@ -136,6 +136,8 @@ firescope deploy    build and deploy
 firescope doctor    validate local setup
 ```
 
+The CLI expects `firebase-tools` for emulator and deploy commands. `firescope connect` can also use `gcloud` to enable required Firebase/GCP APIs automatically.
+
 ## What Firescope Generates
 
 ```txt
@@ -149,6 +151,37 @@ firebase.json
 ```
 
 The generated Functions package is what Firebase deploys. The source app stays clean.
+
+Firescope bundles its own runtime helpers into the generated Functions output and leaves Firebase packages external. That keeps deploy output self-contained while preserving Firebase's runtime packages.
+
+## Function Discovery
+
+Every supported source file under `src/functions` is treated as a Firebase function export by default:
+
+```txt
+src/functions/hello.ts          -> hello
+src/functions/users/created.ts  -> usersCreated
+```
+
+Use underscore-prefixed files or folders for local helpers that should not become functions:
+
+```txt
+src/functions/_shared/audit.ts
+src/functions/users/_helpers.ts
+```
+
+## Environment Files
+
+Firescope loads env files in this order, with later files winning over earlier files:
+
+```txt
+.env
+.env.local
+.env.<mode>
+.env.<mode>.local
+```
+
+Existing shell environment variables are preserved by default. Pass `override: true` to `loadEnv` when file values should replace existing process values.
 
 ## Local Credentials
 
@@ -164,3 +197,18 @@ FIRESCOPE_STORAGE_BUCKET=my-app.appspot.com
 ## Current Status
 
 This is the first working framework version. It is intentionally small: conventions, CLI, runtime scope, typed Firestore helpers, typed function wrappers, generated Firebase config, generated deploy output, and onboarding checks.
+
+## Release
+
+Releases are created from version tags:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The release workflow runs type checks, tests, builds an npm tarball, and publishes a GitHub release.
+
+## GitHub Pages
+
+The project page is served from `docs/` through the Pages workflow: https://maskjelly.github.io/firescope/

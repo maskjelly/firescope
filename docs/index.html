@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Firescope</title>
+    <meta
+      name="description"
+      content="A convention-first framework for Firebase apps, functions, hosting, environments, and deploys."
+    />
+    <style>
+      :root {
+        color-scheme: light dark;
+        --bg: #0f172a;
+        --panel: #111827;
+        --text: #f8fafc;
+        --muted: #cbd5e1;
+        --accent: #f59e0b;
+        --accent-2: #38bdf8;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        background:
+          radial-gradient(circle at top left, rgba(245, 158, 11, 0.22), transparent 32rem),
+          radial-gradient(circle at bottom right, rgba(56, 189, 248, 0.18), transparent 28rem),
+          var(--bg);
+        color: var(--text);
+        line-height: 1.6;
+      }
+
+      main {
+        width: min(72rem, calc(100% - 2rem));
+        margin: 0 auto;
+        padding: 5rem 0;
+      }
+
+      .hero {
+        display: grid;
+        gap: 2rem;
+        grid-template-columns: 1.1fr 0.9fr;
+        align-items: center;
+      }
+
+      .eyebrow {
+        color: var(--accent);
+        font-weight: 700;
+        letter-spacing: 0.12em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0.5rem 0 1rem;
+        font-size: clamp(3rem, 8vw, 6.5rem);
+        line-height: 0.9;
+        letter-spacing: -0.07em;
+      }
+
+      p {
+        color: var(--muted);
+        font-size: 1.1rem;
+      }
+
+      .actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.75rem;
+        margin-top: 2rem;
+      }
+
+      a {
+        color: inherit;
+      }
+
+      .button {
+        border: 1px solid rgba(248, 250, 252, 0.16);
+        border-radius: 999px;
+        padding: 0.8rem 1rem;
+        text-decoration: none;
+        background: rgba(248, 250, 252, 0.08);
+      }
+
+      .button.primary {
+        background: var(--accent);
+        border-color: var(--accent);
+        color: #111827;
+        font-weight: 800;
+      }
+
+      .card {
+        border: 1px solid rgba(248, 250, 252, 0.12);
+        border-radius: 1.5rem;
+        background: rgba(17, 24, 39, 0.72);
+        box-shadow: 0 24px 80px rgba(0, 0, 0, 0.28);
+        overflow: hidden;
+      }
+
+      pre {
+        margin: 0;
+        padding: 1.25rem;
+        overflow-x: auto;
+        color: #e2e8f0;
+      }
+
+      code {
+        font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+      }
+
+      .grid {
+        display: grid;
+        gap: 1rem;
+        grid-template-columns: repeat(3, 1fr);
+        margin-top: 3rem;
+      }
+
+      .feature {
+        border: 1px solid rgba(248, 250, 252, 0.12);
+        border-radius: 1.25rem;
+        padding: 1.25rem;
+        background: rgba(15, 23, 42, 0.72);
+      }
+
+      .feature h2 {
+        margin: 0 0 0.5rem;
+        font-size: 1rem;
+      }
+
+      .feature p {
+        margin: 0;
+        font-size: 0.95rem;
+      }
+
+      @media (max-width: 800px) {
+        main {
+          padding: 3rem 0;
+        }
+
+        .hero,
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <main>
+      <section class="hero">
+        <div>
+          <div class="eyebrow">Firebase without the ceremony</div>
+          <h1>Firescope</h1>
+          <p>
+            A convention-first framework for Firebase apps. Keep Firebase's power while removing repetitive setup for
+            functions, hosting, generated config, local env files, emulator wiring, and deploys.
+          </p>
+          <div class="actions">
+            <a class="button primary" href="https://github.com/maskjelly/firescope">View on GitHub</a>
+            <a class="button" href="https://github.com/maskjelly/firescope/releases">Releases</a>
+          </div>
+        </div>
+        <div class="card">
+          <pre><code>npx firescope@latest init my-app
+cd my-app
+npm install
+npx firescope connect
+npx firescope dev</code></pre>
+        </div>
+      </section>
+
+      <section class="grid" aria-label="Features">
+        <article class="feature">
+          <h2>Convention-first functions</h2>
+          <p>Drop files into <code>src/functions</code> and Firescope generates Firebase-compatible exports.</p>
+        </article>
+        <article class="feature">
+          <h2>Typed Firestore helpers</h2>
+          <p>Define your data model once and get typed collections, docs, and collection groups.</p>
+        </article>
+        <article class="feature">
+          <h2>Clean deploy output</h2>
+          <p>Builds into <code>.firescope/functions</code> so app source stays focused on product code.</p>
+        </article>
+      </section>
+    </main>
+  </body>
+</html>

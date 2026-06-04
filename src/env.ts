@@ -16,17 +16,19 @@ export function loadEnv(options: { cwd?: string; mode?: string; override?: boole
 
   if (loadedKey === key) return
 
-  const files = [".env", `.env.${mode}`, ".env.local", `.env.${mode}.local`]
+  const files = [".env", ".env.local", `.env.${mode}`, `.env.${mode}.local`]
+  const values: Record<string, string> = {}
 
   for (const file of files) {
     const fullPath = resolve(cwd, file)
     if (!existsSync(fullPath)) continue
 
-    const values = parse(readFileSync(fullPath))
-    for (const [name, value] of Object.entries(values)) {
-      if (options.override || process.env[name] === undefined) {
-        process.env[name] = value
-      }
+    Object.assign(values, parse(readFileSync(fullPath)))
+  }
+
+  for (const [name, value] of Object.entries(values)) {
+    if (options.override || process.env[name] === undefined) {
+      process.env[name] = value
     }
   }
 

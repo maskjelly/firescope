@@ -27,16 +27,22 @@ export async function discoverFunctions(cwd: string, source: string): Promise<Di
   const files = await listFiles(sourceRoot)
   const seen = new Map<string, string>()
 
-  return files.map((file) => {
-    const relativeFile = toPosix(relative(sourceRoot, file))
-    const name = toFunctionName(relativeFile)
-    const existing = seen.get(name)
+  return files
+    .filter((file) => shouldDiscoverFunction(toPosix(relative(sourceRoot, file))))
+    .map((file) => {
+      const relativeFile = toPosix(relative(sourceRoot, file))
+      const name = toFunctionName(relativeFile)
+      const existing = seen.get(name)
 
-    if (existing) {
-      throw new Error(`Duplicate function name "${name}" from ${existing} and ${relativeFile}`)
-    }
+      if (existing) {
+        throw new Error(`Duplicate function name "${name}" from ${existing} and ${relativeFile}`)
+      }
 
-    seen.set(name, relativeFile)
-    return { name, file, relativeFile }
-  })
+      seen.set(name, relativeFile)
+      return { name, file, relativeFile }
+    })
+}
+
+function shouldDiscoverFunction(relativeFile: string): boolean {
+  return !relativeFile.split("/").some((part) => part.startsWith("_"))
 }
