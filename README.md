@@ -211,4 +211,4 @@ The release workflow runs type checks, tests, builds an npm tarball, and publish
 
 ## GitHub Pages
 
-The project page is served from `docs/` through the Pages workflow: https://maskjelly.github.io/firescope/
+The project page is served from `docs/` on `main`: https://maskjelly.github.io/firescope/
