@@ -23,7 +23,7 @@ const requiredApis = [
 
 export async function connectCommand(context: CliContext): Promise<void> {
   if (!commandExists("firebase")) {
-    throw new Error("firebase-tools is required. Install it with: npm install -g firebase-tools")
+    throw new Error("firebase-tools is required. Run npm install in this app, or install it with: npm install -D firebase-tools")
   }
 
   if (!commandExists("gcloud")) {

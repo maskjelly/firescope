@@ -18,6 +18,12 @@
     "pubsub": 8085,
     "ui": 4000
   },
+  "firestore": {
+    "rules": "firestore.rules"
+  },
+  "storage": {
+    "rules": "storage.rules"
+  },
   "hosting": {
     "public": "public",
     "cleanUrls": true,

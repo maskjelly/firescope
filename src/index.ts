@@ -3,10 +3,12 @@ export type {
   FirescopeConfig,
   FirescopeEmulatorsConfig,
   FirescopeFunctionMemory,
+  FirescopeFirestoreConfig,
   FirescopeFunctionsConfig,
   FirescopeHostingConfig,
   FirescopeHostingRewrite,
   FirescopeRuntime,
+  FirescopeStorageConfig,
 } from "./config.js"
 export { env, envBool, envInt, loadEnv } from "./env.js"
 export { collection, collectionGroup, defineFirestoreSchema, doc } from "./firestore.js"

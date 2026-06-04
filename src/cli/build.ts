@@ -2,11 +2,12 @@ import { build as esbuild } from "esbuild"
 import { dirname, join } from "node:path"
 import { resolveConfig } from "../config.js"
 import { createFirebaseJson, createFirebaserc } from "../generate/firebase-json.js"
+import { createFirestoreRules, createStorageRules } from "../generate/firebase-rules.js"
 import { createFunctionsEntry } from "../generate/functions-entry.js"
 import { createFunctionsPackage } from "../generate/functions-package.js"
 import { loadConfig } from "./config-loader.js"
 import { discoverFunctions } from "./discover.js"
-import { ensureDir, emptyDir, pathExists, writeFileSafe, writeJson } from "./fs.js"
+import { ensureDir, emptyDir, pathExists, writeFileIfMissing, writeFileSafe, writeJson } from "./fs.js"
 import { log } from "./log.js"
 import type { CliContext } from "./types.js"
 
@@ -54,6 +55,14 @@ export async function buildCommand(context: CliContext): Promise<void> {
   })
 
   await writeJson(join(context.cwd, "firebase.json"), createFirebaseJson(config))
+
+  if (config.firestore !== false) {
+    await writeFileIfMissing(join(context.cwd, config.firestore.rules ?? "firestore.rules"), createFirestoreRules())
+  }
+
+  if (config.storage !== false) {
+    await writeFileIfMissing(join(context.cwd, config.storage.rules ?? "storage.rules"), createStorageRules())
+  }
 
   if (config.project) {
     await writeJson(join(context.cwd, ".firebaserc"), createFirebaserc(config.project))

@@ -1,6 +1,7 @@
 import { join, resolve } from "node:path"
 import { createJiti } from "jiti"
 import { resolveConfig, type FirescopeConfig } from "../config.js"
+import { loadEnv } from "../env.js"
 import { pathExists } from "./fs.js"
 
 const configFiles = [
@@ -26,6 +27,8 @@ export async function loadConfig(cwd: string): Promise<Required<FirescopeConfig>
   if (!configPath) {
     throw new Error(`No firescope config found in ${cwd}. Run firescope init first.`)
   }
+
+  loadEnv({ cwd })
 
   const jiti = createJiti(resolve(cwd, "firescope.config.ts"), {
     interopDefault: true,

@@ -42,6 +42,15 @@ export interface FirescopeHostingConfig {
   }>
 }
 
+export interface FirescopeFirestoreConfig {
+  rules?: string
+  indexes?: string
+}
+
+export interface FirescopeStorageConfig {
+  rules?: string
+}
+
 export interface FirescopeEmulatorsConfig {
   auth?: number
   firestore?: number
@@ -57,6 +66,8 @@ export interface FirescopeConfig {
   region?: string
   runtime?: FirescopeRuntime
   functions?: FirescopeFunctionsConfig
+  firestore?: FirescopeFirestoreConfig | false
+  storage?: FirescopeStorageConfig | false
   hosting?: FirescopeHostingConfig | false
   emulators?: FirescopeEmulatorsConfig
 }
@@ -77,6 +88,12 @@ export const defaultConfig = {
     cleanUrls: true,
     ignore: ["firebase.json", "**/.*", "**/node_modules/**"],
   },
+  firestore: {
+    rules: "firestore.rules",
+  },
+  storage: {
+    rules: "storage.rules",
+  },
   emulators: {
     auth: 9099,
     firestore: 8080,
@@ -86,7 +103,9 @@ export const defaultConfig = {
     pubsub: 8085,
     ui: 4000,
   },
-} satisfies Required<Pick<FirescopeConfig, "region" | "runtime" | "functions" | "hosting" | "emulators">>
+} satisfies Required<
+  Pick<FirescopeConfig, "region" | "runtime" | "functions" | "hosting" | "firestore" | "storage" | "emulators">
+>
 
 export function resolveConfig(config: FirescopeConfig): Required<FirescopeConfig> {
   return {
@@ -97,6 +116,20 @@ export function resolveConfig(config: FirescopeConfig): Required<FirescopeConfig
       ...defaultConfig.functions,
       ...config.functions,
     },
+    firestore:
+      config.firestore === false
+        ? false
+        : {
+            ...defaultConfig.firestore,
+            ...(config.firestore ?? {}),
+          },
+    storage:
+      config.storage === false
+        ? false
+        : {
+            ...defaultConfig.storage,
+            ...(config.storage ?? {}),
+          },
     hosting:
       config.hosting === false
         ? false

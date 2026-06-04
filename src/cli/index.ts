@@ -28,7 +28,7 @@ async function main() {
   }
 
   if (commandName === "version" || commandName === "--version" || commandName === "-v") {
-    console.log("0.1.0")
+    console.log("0.1.1")
     return
   }
 

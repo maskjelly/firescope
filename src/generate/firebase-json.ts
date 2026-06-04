@@ -10,6 +10,19 @@ export function createFirebaseJson(config: Required<FirescopeConfig>) {
     emulators: config.emulators,
   }
 
+  if (config.firestore !== false) {
+    firebaseJson.firestore = {
+      rules: config.firestore.rules,
+      indexes: config.firestore.indexes,
+    }
+  }
+
+  if (config.storage !== false) {
+    firebaseJson.storage = {
+      rules: config.storage.rules,
+    }
+  }
+
   if (config.hosting !== false) {
     firebaseJson.hosting = {
       public: config.hosting.public ?? "public",

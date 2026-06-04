@@ -4,9 +4,11 @@ import { tmpdir } from "node:os"
 import { join } from "node:path"
 import test from "node:test"
 
+import { loadConfig } from "../dist/cli/config-loader.js"
 import { discoverFunctions } from "../dist/cli/discover.js"
 import { loadEnv } from "../dist/env.js"
 import { createFirebaseJson } from "../dist/generate/firebase-json.js"
+import { createFirestoreRules, createStorageRules } from "../dist/generate/firebase-rules.js"
 import { createFunctionsEntry } from "../dist/generate/functions-entry.js"
 import { createFunctionsPackage } from "../dist/generate/functions-package.js"
 
@@ -94,6 +96,8 @@ test("createFirebaseJson omits hosting when disabled", () => {
     region: "us-central1",
     runtime: "nodejs20",
     functions: { source: "src/functions", ignore: [] },
+    firestore: { rules: "firestore.rules" },
+    storage: { rules: "storage.rules" },
     hosting: false,
     emulators: { functions: 5001 },
   })
@@ -104,6 +108,29 @@ test("createFirebaseJson omits hosting when disabled", () => {
     runtime: "nodejs20",
     ignore: ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log"],
   })
+  assert.deepEqual(firebaseJson.firestore, { rules: "firestore.rules" })
+  assert.deepEqual(firebaseJson.storage, { rules: "storage.rules" })
+})
+
+test("default Firebase rules are safe closed rules", () => {
+  assert.match(createFirestoreRules(), /service cloud\.firestore/)
+  assert.match(createFirestoreRules(), /allow read, write: if false/)
+  assert.match(createStorageRules(), /service firebase\.storage/)
+  assert.match(createStorageRules(), /allow read, write: if false/)
+})
+
+test("loadConfig loads .env.local before importing config", async () => {
+  const cwd = await tempProject()
+  await writeFile(join(cwd, ".env.local"), "FIRESCOPE_PROJECT=demo-loaded\n")
+  await writeFile(
+    join(cwd, "firescope.config.mjs"),
+    'export default { project: process.env.FIRESCOPE_PROJECT, region: "europe-west1" }\n',
+  )
+
+  const config = await loadConfig(cwd)
+
+  assert.equal(config.project, "demo-loaded")
+  assert.equal(config.region, "europe-west1")
 })
 
 test("built functions bundle does not externalize Firescope runtime imports", async () => {

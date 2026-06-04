@@ -745,7 +745,7 @@
           <h1 id="hero-title">Firebase apps with a <span class="gradient-text">clear shape.</span></h1>
           <p class="lede">
             Firescope is a convention-first framework for Firebase. It handles function exports, admin SDK scope,
-            generated Firebase config, local env loading, emulator wiring, project connection, and deploy commands.
+            generated Firebase config, local env loading, emulator wiring, project connection, rules files, and deploy commands.
           </p>
           <div class="actions">
             <a class="button primary" href="#quick-start">Start building</a>
@@ -790,7 +790,7 @@
     })
   })</code></pre>
             <div class="terminal">
-              <pre><code>$ npx firescope dev
+              <pre><code>$ npm run dev
 OK Built 4 functions into .firescope/functions
 OK Firebase emulators started</code></pre>
             </div>
@@ -833,7 +833,7 @@ OK Firebase emulators started</code></pre>
           <article class="feature">
             <div class="feature-icon">emu</div>
             <h3>Emulator workflow</h3>
-            <p><code>firescope dev</code> builds your app and starts Firebase emulators with project wiring.</p>
+            <p><code>npm run dev</code> builds your app and starts Firebase emulators with local project wiring.</p>
           </article>
           <article class="feature">
             <div class="feature-icon">ship</div>
@@ -902,7 +902,7 @@ OK Firebase emulators started</code></pre>
             <div class="kicker">Workflow</div>
             <h2 id="workflow-title">From empty folder to emulator loop.</h2>
             <p class="lede">
-              Firescope's CLI owns the boring path: scaffold, connect, build, run locally, and deploy.
+              Firescope's CLI owns the boring path: scaffold, build, run locally, connect when ready, and deploy.
             </p>
             <div class="steps">
               <div class="step">
@@ -911,11 +911,11 @@ OK Firebase emulators started</code></pre>
               </div>
               <div class="step">
                 <div class="step-num">2</div>
-                <div><strong>Connect</strong><span><code>firescope connect</code> selects a Firebase project and writes local project config.</span></div>
+                <div><strong>Develop</strong><span><code>npm run dev</code> uses a demo Firebase project and starts the emulator loop.</span></div>
               </div>
               <div class="step">
                 <div class="step-num">3</div>
-                <div><strong>Develop</strong><span><code>firescope dev</code> generates output and starts Firebase emulators.</span></div>
+                <div><strong>Connect</strong><span><code>npm run connect</code> selects a real Firebase project when you are ready to deploy.</span></div>
               </div>
             </div>
           </div>
@@ -971,6 +971,8 @@ OK Built 4 functions into .firescope/functions
   lib/index.js        # bundled app and Firescope helpers
 
 firebase.json         # functions, hosting, emulators
+firestore.rules       # safe generated default when missing
+storage.rules         # safe generated default when missing
 .firebaserc           # selected project</code></pre>
         </div>
       </section>

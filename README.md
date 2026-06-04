@@ -8,14 +8,14 @@ Firescope is a convention-first framework for Firebase apps. It keeps Firebase's
 npx firescope@latest init my-app
 cd my-app
 npm install
-npx firescope connect
-npx firescope dev
+npm run dev
 ```
 
 Deploy:
 
 ```sh
-npx firescope deploy
+npm run connect
+npm run deploy
 ```
 
 ## App Shape
@@ -136,13 +136,15 @@ firescope deploy    build and deploy
 firescope doctor    validate local setup
 ```
 
-The CLI expects `firebase-tools` for emulator and deploy commands. `firescope connect` can also use `gcloud` to enable required Firebase/GCP APIs automatically.
+Generated apps install `firebase-tools` locally, so `npm run dev` works without a global Firebase CLI. Local dev uses the demo project `demo-firescope` until you run `firescope connect`. `firescope connect` can also use `gcloud` to enable required Firebase/GCP APIs automatically.
 
 ## What Firescope Generates
 
 ```txt
 firebase.json
 .firebaserc
+firestore.rules
+storage.rules
 .firescope/
   functions/
     package.json
@@ -153,6 +155,8 @@ firebase.json
 The generated Functions package is what Firebase deploys. The source app stays clean.
 
 Firescope bundles its own runtime helpers into the generated Functions output and leaves Firebase packages external. That keeps deploy output self-contained while preserving Firebase's runtime packages.
+
+Firescope also writes safe default `firestore.rules` and `storage.rules` files when they are missing. The defaults are closed (`allow read, write: if false`) so emulators start without accidentally opening production data. Customize those files when your client app needs direct Firestore or Storage access.
 
 ## Function Discovery
 
@@ -216,8 +220,8 @@ npx firescope@latest init my-app
 Releases are created from version tags:
 
 ```sh
-git tag v0.1.0
-git push origin v0.1.0
+git tag v0.1.1
+git push origin v0.1.1
 ```
 
 The release workflow runs type checks, tests, builds an npm tarball, and publishes a GitHub release.

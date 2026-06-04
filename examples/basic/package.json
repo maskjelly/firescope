@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "firescope dev",
     "build": "firescope build",
+    "connect": "firescope connect",
     "deploy": "firescope deploy",
     "doctor": "firescope doctor"
   },
@@ -14,6 +15,7 @@
     "firebase-functions": "^6.2.0"
   },
   "devDependencies": {
+    "firebase-tools": "^14.17.0",
     "typescript": "^5.7.2"
   },
   "engines": {

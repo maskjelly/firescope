@@ -1,4 +1,5 @@
 import { join, resolve } from "node:path"
+import { createFirestoreRules, createStorageRules } from "../generate/firebase-rules.js"
 import { ensureDir, isEmptyDir, pathExists, writeFileIfMissing, writeJson } from "./fs.js"
 import { log } from "./log.js"
 import { prompt } from "./prompt.js"
@@ -22,15 +23,17 @@ export async function initCommand(context: CliContext): Promise<void> {
     scripts: {
       dev: "firescope dev",
       build: "firescope build",
+      connect: "firescope connect",
       deploy: "firescope deploy",
       doctor: "firescope doctor",
     },
     dependencies: {
-      firescope: "^0.1.0",
+      firescope: "^0.1.1",
       "firebase-admin": "^13.0.2",
       "firebase-functions": "^6.2.0",
     },
     devDependencies: {
+      "firebase-tools": "^14.17.0",
       typescript: "^5.7.2",
     },
     engines: {
@@ -55,12 +58,14 @@ export async function initCommand(context: CliContext): Promise<void> {
 
   await writeFileIfMissing(
     join(appDir, "public", "index.html"),
-    `<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="utf-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    <title>Firescope</title>\n  </head>\n  <body>\n    <main>\n      <h1>Firescope is running</h1>\n      <p>Run <code>firescope connect</code>, then <code>firescope dev</code>.</p>\n    </main>\n  </body>\n</html>\n`,
+    `<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="utf-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    <title>Firescope</title>\n  </head>\n  <body>\n    <main>\n      <h1>Firescope is running</h1>\n      <p>Run <code>npm run dev</code> to start the Firebase emulators.</p>\n    </main>\n  </body>\n</html>\n`,
   )
 
+  await writeFileIfMissing(join(appDir, "firestore.rules"), createFirestoreRules())
+  await writeFileIfMissing(join(appDir, "storage.rules"), createStorageRules())
   await writeFileIfMissing(join(appDir, ".env.local"), "FIRESCOPE_PROJECT=\n")
   await writeFileIfMissing(join(appDir, ".gitignore"), "node_modules\n.firescope\n.firebase\n.env.local\n*.log\n")
 
   log.success(`Created Firescope app in ${appDir}`)
-  log.info("Next: npm install, firescope connect, firescope dev")
+  log.info(`Next: ${targetArg ? `cd ${targetArg}, ` : ""}npm install, npm run dev`)
 }

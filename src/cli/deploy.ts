@@ -6,7 +6,7 @@ import type { CliContext } from "./types.js"
 
 export async function deployCommand(context: CliContext): Promise<void> {
   if (!commandExists("firebase")) {
-    throw new Error("firebase-tools is required. Install it with: npm install -g firebase-tools")
+    throw new Error("firebase-tools is required. Run npm install in this app, or install it with: npm install -D firebase-tools")
   }
 
   const config = await loadConfig(context.cwd)
