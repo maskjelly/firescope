@@ -1,0 +1,36 @@
+{
+  "functions": {
+    "source": ".firescope/functions",
+    "runtime": "nodejs20",
+    "ignore": [
+      "node_modules",
+      ".git",
+      "firebase-debug.log",
+      "firebase-debug.*.log"
+    ]
+  },
+  "emulators": {
+    "auth": 9099,
+    "firestore": 8080,
+    "functions": 5001,
+    "hosting": 5000,
+    "storage": 9199,
+    "pubsub": 8085,
+    "ui": 4000
+  },
+  "hosting": {
+    "public": "public",
+    "cleanUrls": true,
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "/api/hello",
+        "function": "hello"
+      }
+    ]
+  }
+}

@@ -1,0 +1,61 @@
+import { join, resolve } from "node:path"
+import { ensureDir, isEmptyDir, pathExists, writeFileIfMissing, writeJson } from "./fs.js"
+import { log } from "./log.js"
+import { prompt } from "./prompt.js"
+import type { CliContext } from "./types.js"
+
+export async function initCommand(context: CliContext): Promise<void> {
+  const targetArg = context.args[0]
+  const appDir = targetArg ? resolve(context.cwd, targetArg) : context.cwd
+  const appName = targetArg ?? (await prompt("App name", "my-firescope-app"))
+
+  await ensureDir(appDir)
+
+  if (!(await isEmptyDir(appDir)) && !(await pathExists(join(appDir, "firescope.config.ts")))) {
+    throw new Error(`Directory is not empty: ${appDir}`)
+  }
+
+  await writeJson(join(appDir, "package.json"), {
+    name: appName.replace(/[^a-zA-Z0-9-_]/g, "-").toLowerCase(),
+    private: true,
+    type: "module",
+    scripts: {
+      dev: "firescope dev",
+      build: "firescope build",
+      deploy: "firescope deploy",
+      doctor: "firescope doctor",
+    },
+    dependencies: {
+      firescope: "^0.1.0",
+      "firebase-admin": "^13.0.2",
+      "firebase-functions": "^6.2.0",
+    },
+    devDependencies: {
+      typescript: "^5.7.2",
+    },
+    engines: {
+      node: ">=20",
+    },
+  })
+
+  await writeFileIfMissing(
+    join(appDir, "firescope.config.ts"),
+    `import { defineConfig } from "firescope"\n\nexport default defineConfig({\n  project: process.env.FIRESCOPE_PROJECT,\n  region: "us-central1",\n  runtime: "nodejs20",\n  functions: {\n    source: "src/functions",\n  },\n  hosting: {\n    public: "public",\n    cleanUrls: true,\n  },\n})\n`,
+  )
+
+  await writeFileIfMissing(
+    join(appDir, "src", "functions", "hello.ts"),
+    `import { http } from "firescope/functions"\n\nexport default http(async ({ res }) => {\n  res.json({ ok: true, message: "Hello from Firescope" })\n})\n`,
+  )
+
+  await writeFileIfMissing(
+    join(appDir, "public", "index.html"),
+    `<!doctype html>\n<html lang="en">\n  <head>\n    <meta charset="utf-8" />\n    <meta name="viewport" content="width=device-width, initial-scale=1" />\n    <title>Firescope</title>\n  </head>\n  <body>\n    <main>\n      <h1>Firescope is running</h1>\n      <p>Run <code>firescope connect</code>, then <code>firescope dev</code>.</p>\n    </main>\n  </body>\n</html>\n`,
+  )
+
+  await writeFileIfMissing(join(appDir, ".env.local"), "FIRESCOPE_PROJECT=\n")
+  await writeFileIfMissing(join(appDir, ".gitignore"), "node_modules\n.firescope\n.firebase\n.env.local\n*.log\n")
+
+  log.success(`Created Firescope app in ${appDir}`)
+  log.info("Next: npm install, firescope connect, firescope dev")
+}

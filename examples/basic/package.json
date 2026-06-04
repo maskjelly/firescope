@@ -1,0 +1,22 @@
+{
+  "name": "firescope-basic-example",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "firescope dev",
+    "build": "firescope build",
+    "deploy": "firescope deploy",
+    "doctor": "firescope doctor"
+  },
+  "dependencies": {
+    "firescope": "file:../..",
+    "firebase-admin": "^13.0.2",
+    "firebase-functions": "^6.2.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
