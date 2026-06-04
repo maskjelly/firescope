@@ -61,7 +61,7 @@ export interface FirescopeConfig {
   emulators?: FirescopeEmulatorsConfig
 }
 
-export function defineConfig(config: FirescopeConfig): FirescopeConfig {
+export function defineConfig<const Config extends FirescopeConfig>(config: Config): Config {
   return config
 }
 

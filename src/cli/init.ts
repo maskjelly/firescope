@@ -44,8 +44,13 @@ export async function initCommand(context: CliContext): Promise<void> {
   )
 
   await writeFileIfMissing(
+    join(appDir, "src", "db.ts"),
+    `import { defineFirestoreSchema } from "firescope"\n\nexport type AppDb = {\n  users: {\n    displayName: string\n    createdAt: string\n  }\n}\n\nexport const data = defineFirestoreSchema<AppDb>()\n`,
+  )
+
+  await writeFileIfMissing(
     join(appDir, "src", "functions", "hello.ts"),
-    `import { http } from "firescope/functions"\n\nexport default http(async ({ res }) => {\n  res.json({ ok: true, message: "Hello from Firescope" })\n})\n`,
+    `import { http } from "firescope/functions"\nimport { data } from "../db.js"\n\nexport default http(async ({ scope, res }) => {\n  const users = await data.collection("users", scope.db).limit(10).get()\n\n  res.json({\n    ok: true,\n    message: "Hello from Firescope",\n    users: users.docs.map((doc) => ({ id: doc.id, ...doc.data() })),\n  })\n})\n`,
   )
 
   await writeFileIfMissing(

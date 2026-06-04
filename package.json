@@ -16,6 +16,10 @@
     "./functions": {
       "types": "./dist/functions/index.d.ts",
       "import": "./dist/functions/index.js"
+    },
+    "./firestore": {
+      "types": "./dist/firestore.d.ts",
+      "import": "./dist/firestore.js"
     }
   },
   "files": [
