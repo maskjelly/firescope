@@ -4,6 +4,18 @@
   "description": "A convention-first framework for Firebase apps, functions, hosting, environments, and deploys.",
   "type": "module",
   "license": "MIT",
+  "author": "maskjelly",
+  "sideEffects": false,
+  "keywords": [
+    "firebase",
+    "firestore",
+    "firebase-functions",
+    "firebase-admin",
+    "emulator",
+    "framework",
+    "cli",
+    "typescript"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maskjelly/firescope.git"
@@ -17,7 +29,8 @@
     "create-firescope": "dist/create/index.js"
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "provenance": true
   },
   "exports": {
     ".": {
@@ -31,30 +44,40 @@
     "./firestore": {
       "types": "./dist/firestore.d.ts",
       "import": "./dist/firestore.js"
-    }
+    },
+    "./package.json": "./package.json"
   },
+  "types": "./dist/index.d.ts",
   "files": [
     "dist"
   ],
   "scripts": {
     "build": "tsc",
-    "check": "tsc --noEmit",
+    "check": "tsc --noEmit && tsc -p tests/types/tsconfig.json",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
     "prepack": "npm run build",
-    "prepublishOnly": "npm run check && npm test",
+    "prepublishOnly": "npm run check && npm run lint && npm test",
     "test": "npm run build && node --test tests/*.test.mjs"
   },
   "dependencies": {
-    "dotenv": "^16.4.7",
-    "esbuild": "^0.24.2",
-    "firebase-admin": "^13.0.2",
-    "firebase-functions": "^6.2.0",
-    "jiti": "^2.4.2"
+    "dotenv": "^18.0.1",
+    "esbuild": "^0.28.2",
+    "firebase-admin": "^14.4.0",
+    "firebase-functions": "^7.4.0",
+    "jiti": "^2.7.0"
   },
   "devDependencies": {
-    "@types/node": "^22.10.2",
-    "typescript": "^5.7.2"
+    "@eslint/js": "^9.39.5",
+    "@types/node": "^22.20.4",
+    "eslint": "^9.39.5",
+    "globals": "^16.5.0",
+    "prettier": "^3.9.8",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.70.0"
   },
   "engines": {
-    "node": ">=20"
+    "node": ">=22"
   }
 }
