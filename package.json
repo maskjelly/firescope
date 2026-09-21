@@ -1,6 +1,6 @@
 {
   "name": "firescope",
-  "version": "0.1.1",
+  "version": "0.2.0",
   "description": "A convention-first framework for Firebase apps, functions, hosting, environments, and deploys.",
   "type": "module",
   "license": "MIT",
