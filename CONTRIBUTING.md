@@ -75,4 +75,4 @@ node dist/cli/index.js build --cwd /tmp/my-app
    git push origin v0.2.0
    ```
 
-The release workflow runs checks, tests, and `npm pack`, publishes to npm (when the `NPM_TOKEN` secret is configured), and creates a GitHub release.
+The release workflow runs checks, tests, and `npm pack`, creates a GitHub release, and publishes to npm when credentials are configured. Either add an `NPM_TOKEN` repository secret with publish rights or set up [npm trusted publishing](https://docs.npmjs.com/trusted-publishers) for this repository's `release.yml`. Without credentials the workflow still creates the GitHub release; re-run it after adding credentials to publish the tagged version.
