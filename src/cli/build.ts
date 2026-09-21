@@ -1,26 +1,46 @@
 import { build as esbuild } from "esbuild"
 import { dirname, join } from "node:path"
-import { resolveConfig } from "../config.js"
 import { createFirebaseJson, createFirebaserc } from "../generate/firebase-json.js"
 import { createFirestoreRules, createStorageRules } from "../generate/firebase-rules.js"
 import { createFunctionsEntry } from "../generate/functions-entry.js"
 import { createFunctionsPackage } from "../generate/functions-package.js"
 import { loadConfig } from "./config-loader.js"
-import { discoverFunctions } from "./discover.js"
+import { discoverFunctions, type DiscoveredFunction } from "./discover.js"
+import { FirescopeError } from "./errors.js"
 import { ensureDir, emptyDir, pathExists, writeFileIfMissing, writeFileSafe, writeJson } from "./fs.js"
-import { log } from "./log.js"
+import { color, log } from "./log.js"
 import type { CliContext } from "./types.js"
 
-export async function buildCommand(context: CliContext): Promise<void> {
-  const config = resolveConfig(await loadConfig(context.cwd))
+export interface BuildResult {
+  functions: DiscoveredFunction[]
+  functionsRoot: string
+  durationMs: number
+}
+
+function esbuildTarget(runtime: string): string {
+  const major = runtime.replace(/[^0-9]/g, "")
+  return major ? `node${major}` : "node22"
+}
+
+export async function buildCommand(context: CliContext): Promise<BuildResult> {
+  const startedAt = Date.now()
+  const config = await loadConfig(context.cwd)
   const source = config.functions.source ?? "src/functions"
   const sourceRoot = join(context.cwd, source)
 
   if (!(await pathExists(sourceRoot))) {
-    throw new Error(`Functions source does not exist: ${source}`)
+    throw new FirescopeError(
+      `Functions source not found: ${source}`,
+      `Create the ${source} directory, or change functions.source in firescope.config.ts.`,
+    )
   }
 
-  const functions = await discoverFunctions(context.cwd, source)
+  const functions = await discoverFunctions(context.cwd, source, config.functions.ignore ?? [])
+
+  if (functions.length === 0) {
+    log.warn(`No functions found in ${source}. Add a file, or underscore-prefix helpers to skip them.`)
+  }
+
   const generatedRoot = join(context.cwd, ".firescope")
   const functionsRoot = join(generatedRoot, "functions")
   const entryPath = join(functionsRoot, "src", "index.ts")
@@ -30,7 +50,7 @@ export async function buildCommand(context: CliContext): Promise<void> {
   await ensureDir(dirname(entryPath))
   await ensureDir(dirname(outFile))
 
-  await writeFileSafe(entryPath, createFunctionsEntry(functions, entryPath))
+  await writeFileSafe(entryPath, createFunctionsEntry(functions, entryPath, { functions: config.functions }))
   await writeJson(join(functionsRoot, "package.json"), await createFunctionsPackage(context.cwd))
   await writeFileSafe(
     join(functionsRoot, "README.md"),
@@ -43,7 +63,7 @@ export async function buildCommand(context: CliContext): Promise<void> {
     bundle: true,
     platform: "node",
     format: "esm",
-    target: config.runtime === "nodejs22" ? "node22" : "node20",
+    target: esbuildTarget(config.runtime),
     sourcemap: true,
     external: ["firebase-admin", "firebase-functions"],
     define: {
@@ -68,5 +88,12 @@ export async function buildCommand(context: CliContext): Promise<void> {
     await writeJson(join(context.cwd, ".firebaserc"), createFirebaserc(config.project))
   }
 
-  log.success(`Built ${functions.length} function${functions.length === 1 ? "" : "s"} into .firescope/functions`)
+  const label = `${functions.length} function${functions.length === 1 ? "" : "s"}`
+  log.success(`Built ${label} into ${color.cyan(".firescope/functions")}`)
+
+  if (functions.length > 0) {
+    log.detail(functions.map((fn) => fn.name).join(", "))
+  }
+
+  return { functions, functionsRoot, durationMs: Date.now() - startedAt }
 }

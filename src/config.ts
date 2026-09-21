@@ -1,14 +1,6 @@
-export type FirescopeRuntime = "nodejs20" | "nodejs22" | (string & {})
+export type FirescopeRuntime = "nodejs20" | "nodejs22" | "nodejs24" | (string & {})
 
-export type FirescopeFunctionMemory =
-  | "128MiB"
-  | "256MiB"
-  | "512MiB"
-  | "1GiB"
-  | "2GiB"
-  | "4GiB"
-  | "8GiB"
-  | (string & {})
+export type FirescopeFunctionMemory = "128MiB" | "256MiB" | "512MiB" | "1GiB" | "2GiB" | "4GiB" | "8GiB" | (string & {})
 
 export interface FirescopeFunctionsConfig {
   source?: string
@@ -59,6 +51,7 @@ export interface FirescopeEmulatorsConfig {
   storage?: number
   pubsub?: number
   ui?: number
+  singleProjectMode?: boolean
 }
 
 export interface FirescopeConfig {
@@ -78,7 +71,7 @@ export function defineConfig<const Config extends FirescopeConfig>(config: Confi
 
 export const defaultConfig = {
   region: "us-central1",
-  runtime: "nodejs20",
+  runtime: "nodejs22",
   functions: {
     source: "src/functions",
     ignore: ["node_modules", ".git", "dist", ".firescope"],
@@ -102,6 +95,7 @@ export const defaultConfig = {
     storage: 9199,
     pubsub: 8085,
     ui: 4000,
+    singleProjectMode: true,
   },
 } satisfies Required<
   Pick<FirescopeConfig, "region" | "runtime" | "functions" | "hosting" | "firestore" | "storage" | "emulators">

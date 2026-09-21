@@ -10,10 +10,7 @@ import { getScope } from "./scope.js"
 export type FirestoreModel = DocumentData
 export type FirestoreSchema = Record<string, FirestoreModel>
 export type CollectionName<Schema extends FirestoreSchema> = Extract<keyof Schema, string>
-export type CollectionModel<
-  Schema extends FirestoreSchema,
-  Name extends CollectionName<Schema>,
-> = Schema[Name]
+export type CollectionModel<Schema extends FirestoreSchema, Name extends CollectionName<Schema>> = Schema[Name]
 
 export interface BoundFirestoreSchema<Schema extends FirestoreSchema> {
   collection<Name extends CollectionName<Schema>>(name: Name): CollectionReference<CollectionModel<Schema, Name>>

@@ -27,7 +27,7 @@ export async function createFunctionsPackage(cwd: string) {
       "firebase-functions": firebaseFunctionsVersion,
     },
     engines: {
-      node: ">=20",
+      node: ">=22",
     },
   }
 }

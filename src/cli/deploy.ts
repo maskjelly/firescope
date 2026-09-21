@@ -1,27 +1,50 @@
+import { flagEnabled, flagString, forwardFlags } from "./args.js"
 import { buildCommand } from "./build.js"
 import { loadConfig } from "./config-loader.js"
-import { commandExists, runRequired } from "./process.js"
+import { FirescopeError } from "./errors.js"
+import { color, log } from "./log.js"
+import { resolveCommand, runRequired } from "./process.js"
 import { confirm } from "./prompt.js"
 import type { CliContext } from "./types.js"
 
 export async function deployCommand(context: CliContext): Promise<void> {
-  if (!commandExists("firebase")) {
-    throw new Error("firebase-tools is required. Run npm install in this app, or install it with: npm install -D firebase-tools")
+  const firebase = resolveCommand("firebase", context.cwd)
+
+  if (!firebase) {
+    throw new FirescopeError(
+      "firebase-tools is not installed for this app",
+      "Run npm install (firebase-tools is a devDependency), or install it globally with npm install -g firebase-tools.",
+    )
   }
 
   const config = await loadConfig(context.cwd)
-  if (!config.project) {
-    throw new Error("No Firebase project configured. Run firescope connect first.")
+  const project = flagString(context, "project") ?? config.project
+
+  if (!project) {
+    throw new FirescopeError(
+      "No Firebase project configured",
+      "Run firescope connect to select a project, or pass --project <id>.",
+    )
   }
 
-  if (!context.flags.has("yes") && !context.flags.has("y")) {
-    const proceed = await confirm(`Deploy to ${config.project}`, false)
-    if (!proceed) return
+  if (!flagEnabled(context, "yes", "y") && !(await confirm(`Deploy to ${color.bold(project)}`, false))) {
+    log.warn("Deploy cancelled.")
+    return
   }
 
+  log.step("Building functions")
   await buildCommand(context)
-  await runRequired("firebase", ["deploy", "--config", "firebase.json", "--project", config.project], {
-    cwd: context.cwd,
-    stdio: "inherit",
-  })
+
+  const args = [
+    "deploy",
+    "--config",
+    "firebase.json",
+    "--project",
+    project,
+    ...forwardFlags(context, ["yes", "y", "project"]),
+    ...context.args,
+  ]
+
+  await runRequired(firebase, args, { cwd: context.cwd, stdio: "inherit" })
+  log.success(`Deployed to ${color.bold(project)}`)
 }

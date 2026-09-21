@@ -1,11 +1,5 @@
 import { existsSync, readFileSync } from "node:fs"
-import {
-  cert,
-  getApps,
-  initializeApp,
-  type App,
-  type AppOptions,
-} from "firebase-admin/app"
+import { cert, getApps, initializeApp, type App, type AppOptions } from "firebase-admin/app"
 import { getAuth, type Auth } from "firebase-admin/auth"
 import { getFirestore, type Firestore } from "firebase-admin/firestore"
 import { getFunctions, type Functions } from "firebase-admin/functions"
@@ -24,10 +18,27 @@ export interface FirescopeScope {
 
 let cachedScope: FirescopeScope | undefined
 
+function projectIdFromEnvironment(): string | undefined {
+  const explicit = process.env.FIRESCOPE_PROJECT ?? process.env.GCLOUD_PROJECT ?? process.env.GOOGLE_CLOUD_PROJECT
+  if (explicit) return explicit
+
+  const firebaseConfig = process.env.FIREBASE_CONFIG
+  if (firebaseConfig) {
+    try {
+      const parsed = JSON.parse(firebaseConfig) as { projectId?: string }
+      if (parsed.projectId) return parsed.projectId
+    } catch {
+      return undefined
+    }
+  }
+
+  return undefined
+}
+
 function appOptionsFromEnvironment(): AppOptions | undefined {
   const serviceAccountPath = process.env.FIRESCOPE_SERVICE_ACCOUNT
   const storageBucket = process.env.FIRESCOPE_STORAGE_BUCKET
-  const projectId = process.env.GCLOUD_PROJECT ?? process.env.GOOGLE_CLOUD_PROJECT ?? process.env.FIREBASE_CONFIG_PROJECT
+  const projectId = projectIdFromEnvironment()
 
   const options: AppOptions = {}
 

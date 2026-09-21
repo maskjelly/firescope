@@ -34,12 +34,23 @@ export async function writeFileIfMissing(path: string, value: string): Promise<b
   return true
 }
 
+export async function writeEnvValue(path: string, key: string, value: string): Promise<void> {
+  const current = (await pathExists(path)) ? await readFile(path, "utf8") : ""
+  const lines = current.split("\n").filter((line) => line && !line.startsWith(`${key}=`))
+
+  lines.push(`${key}=${value}`)
+  await writeFileSafe(path, `${lines.join("\n")}\n`)
+}
+
 export async function emptyDir(path: string): Promise<void> {
   await rm(path, { recursive: true, force: true })
   await ensureDir(path)
 }
 
-export async function listFiles(root: string, extensions = new Set([".ts", ".tsx", ".js", ".mjs", ".cjs"])): Promise<string[]> {
+export async function listFiles(
+  root: string,
+  extensions = new Set([".ts", ".tsx", ".js", ".mjs", ".cjs"]),
+): Promise<string[]> {
   if (!(await pathExists(root))) return []
 
   const results: string[] = []
@@ -97,7 +108,6 @@ export async function nearestPackageJson(cwd: string): Promise<string | undefine
   while (true) {
     const candidate = join(current, "package.json")
     if (await pathExists(candidate)) return candidate
-
 
     const next = dirname(current)
     if (next === current) return undefined

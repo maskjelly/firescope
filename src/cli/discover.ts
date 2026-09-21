@@ -1,5 +1,6 @@
 import { basename, dirname, extname, join, relative } from "node:path"
 import { listFiles, toPosix } from "./fs.js"
+import { matchesAnyGlob } from "./glob.js"
 
 export interface DiscoveredFunction {
   name: string
@@ -22,13 +23,20 @@ function toFunctionName(relativeFile: string): string {
   return name || "app"
 }
 
-export async function discoverFunctions(cwd: string, source: string): Promise<DiscoveredFunction[]> {
+export async function discoverFunctions(
+  cwd: string,
+  source: string,
+  ignore: string[] = [],
+): Promise<DiscoveredFunction[]> {
   const sourceRoot = join(cwd, source)
   const files = await listFiles(sourceRoot)
   const seen = new Map<string, string>()
 
   return files
-    .filter((file) => shouldDiscoverFunction(toPosix(relative(sourceRoot, file))))
+    .filter((file) => {
+      const relativeFile = toPosix(relative(sourceRoot, file))
+      return shouldDiscoverFunction(relativeFile) && !matchesAnyGlob(relativeFile, ignore)
+    })
     .map((file) => {
       const relativeFile = toPosix(relative(sourceRoot, file))
       const name = toFunctionName(relativeFile)

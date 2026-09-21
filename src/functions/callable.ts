@@ -7,9 +7,7 @@ export interface CallableContext<T = unknown> extends FirescopeHandlerContext {
   auth: CallableRequest<T>["auth"]
 }
 
-export type CallableHandler<T = unknown, Result = unknown> = (
-  context: CallableContext<T>,
-) => Result | Promise<Result>
+export type CallableHandler<T = unknown, Result = unknown> = (context: CallableContext<T>) => Result | Promise<Result>
 
 export function callable<T = unknown, Result = unknown>(
   handler: CallableHandler<T, Result>,

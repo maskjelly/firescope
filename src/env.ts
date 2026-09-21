@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs"
 import { resolve } from "node:path"
 import { parse } from "dotenv"
 
-let loadedKey = ""
+const loadedKeys = new Set<string>()
 
 export interface EnvOptions {
   fallback?: string
@@ -14,7 +14,8 @@ export function loadEnv(options: { cwd?: string; mode?: string; override?: boole
   const mode = options.mode ?? process.env.FIRESCOPE_ENV ?? process.env.NODE_ENV ?? "development"
   const key = `${cwd}:${mode}:${options.override ? "override" : "default"}`
 
-  if (loadedKey === key) return
+  if (loadedKeys.has(key)) return
+  loadedKeys.add(key)
 
   const files = [".env", ".env.local", `.env.${mode}`, `.env.${mode}.local`]
   const values: Record<string, string> = {}
@@ -31,8 +32,6 @@ export function loadEnv(options: { cwd?: string; mode?: string; override?: boole
       process.env[name] = value
     }
   }
-
-  loadedKey = key
 }
 
 export function env(name: string, options: EnvOptions = {}): string {
@@ -47,21 +46,22 @@ export function env(name: string, options: EnvOptions = {}): string {
 }
 
 export function envInt(name: string, options: EnvOptions = {}): number {
-  const value = env(name, options)
-  const parsed = Number.parseInt(value, 10)
+  const value = env(name, options).trim()
 
-  if (!Number.isFinite(parsed)) {
-    throw new Error(`Environment variable ${name} must be an integer`)
+  if (!/^-?\d+$/.test(value)) {
+    throw new Error(`Environment variable ${name} must be an integer (received "${value}")`)
   }
 
-  return parsed
+  return Number.parseInt(value, 10)
 }
 
 export function envBool(name: string, options: EnvOptions = {}): boolean {
-  const value = env(name, options).toLowerCase()
+  const value = env(name, options).trim().toLowerCase()
 
   if (["1", "true", "yes", "on"].includes(value)) return true
   if (["0", "false", "no", "off"].includes(value)) return false
 
-  throw new Error(`Environment variable ${name} must be a boolean`)
+  throw new Error(
+    `Environment variable ${name} must be a boolean: 1, true, yes, on, 0, false, no, or off (received "${value}")`,
+  )
 }

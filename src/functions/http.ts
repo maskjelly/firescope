@@ -11,7 +11,11 @@ export type HttpHandler = (context: HttpContext) => unknown | Promise<unknown>
 
 export function http(handler: HttpHandler, options: HttpsOptions = {}) {
   return onRequest({ region: runtimeRegion(), ...options }, async (req, res) => {
-    await handler({ ...baseContext(), req, res })
+    const result = await handler({ ...baseContext(), req, res })
+
+    if (result !== undefined && !res.headersSent && !res.writableEnded) {
+      res.json(result)
+    }
   })
 }
 
