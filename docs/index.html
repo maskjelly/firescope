@@ -8,6 +8,25 @@
       name="description"
       content="Firescope is a convention-first framework for Firebase apps, functions, hosting, environments, emulator workflows, and deploys."
     />
+    <link rel="canonical" href="https://maskjelly.github.io/firescope/" />
+    <link
+      rel="icon"
+      href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='18' fill='%23ff8a00'/%3E%3Ctext x='32' y='45' font-family='system-ui,sans-serif' font-size='38' font-weight='800' text-anchor='middle' fill='%2315110a'%3EF%3C/text%3E%3C/svg%3E"
+    />
+    <meta name="theme-color" content="#080b13" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="Firescope - Convention-first Firebase framework" />
+    <meta
+      property="og:description"
+      content="Function discovery, a typed admin scope, generated Firebase config, emulator wiring, and deploys behind two commands."
+    />
+    <meta property="og:url" content="https://maskjelly.github.io/firescope/" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Firescope - Convention-first Firebase framework" />
+    <meta
+      name="twitter:description"
+      content="Function discovery, a typed admin scope, generated Firebase config, emulator wiring, and deploys behind two commands."
+    />
     <style>
       :root {
         color-scheme: dark;
@@ -271,9 +290,39 @@
 
       .install code {
         min-width: 0;
+        flex: 1;
         padding: 0.82rem 1rem;
         overflow-x: auto;
         white-space: nowrap;
+      }
+
+      .copy {
+        flex-shrink: 0;
+        align-self: stretch;
+        border: 0;
+        border-left: 1px solid var(--line);
+        padding: 0 1rem;
+        color: var(--muted-strong);
+        font: inherit;
+        font-size: 0.88rem;
+        font-weight: 700;
+        cursor: pointer;
+        background: rgba(255, 255, 255, 0.05);
+      }
+
+      .copy:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, 0.1);
+      }
+
+      .copy:focus-visible {
+        outline: 2px solid var(--orange);
+        outline-offset: -2px;
+      }
+
+      .pill code {
+        color: inherit;
+        font-size: 0.86rem;
       }
 
       .stats {
@@ -733,6 +782,7 @@
           <a href="#code">Code</a>
           <a href="#workflow">Workflow</a>
           <a href="#deploy">Deploy</a>
+          <a href="https://github.com/maskjelly/firescope#readme">Docs</a>
           <a class="nav-cta" href="https://github.com/maskjelly/firescope">GitHub</a>
         </nav>
       </div>
@@ -741,7 +791,7 @@
     <main id="top" class="page">
       <section class="hero" aria-labelledby="hero-title">
         <div class="hero-copy">
-          <div class="pill"><span class="dot"></span> First working framework release</div>
+          <div class="pill"><span class="dot"></span> v0.1.1 · MIT · <code>npx firescope@latest</code></div>
           <h1 id="hero-title">Firebase apps with a <span class="gradient-text">clear shape.</span></h1>
           <p class="lede">
             Firescope is a convention-first framework for Firebase. It handles function exports, admin SDK scope,
@@ -753,7 +803,10 @@
           </div>
           <div id="quick-start" class="install" aria-label="Install command">
             <span>Quick start</span>
-            <code>npx firescope@latest init my-app</code>
+            <code id="install-command">npx firescope@latest init my-app</code>
+            <button class="copy" type="button" data-copy="npx firescope@latest init my-app" aria-describedby="install-command">
+              Copy
+            </button>
           </div>
           <div class="stats" aria-label="Project highlights">
             <div class="stat">
@@ -765,7 +818,7 @@
               <span>Firestore abstraction tax</span>
             </div>
             <div class="stat">
-              <strong>Node 20+</strong>
+              <strong>Node 22+</strong>
               <span>Firebase Functions v2</span>
             </div>
           </div>
@@ -791,8 +844,10 @@
   })</code></pre>
             <div class="terminal">
               <pre><code>$ npm run dev
-OK Built 4 functions into .firescope/functions
-OK Firebase emulators started</code></pre>
+✔ Built 4 functions into .firescope/functions
+  dailySummary, hello, ping, usersCreated
+› Watching src for changes
+✔ Firebase emulators started</code></pre>
             </div>
           </div>
         </div>
@@ -917,6 +972,10 @@ OK Firebase emulators started</code></pre>
                 <div class="step-num">3</div>
                 <div><strong>Connect</strong><span><code>npm run connect</code> selects a real Firebase project when you are ready to deploy.</span></div>
               </div>
+              <div class="step">
+                <div class="step-num">4</div>
+                <div><strong>Ship</strong><span><code>npm run deploy</code> builds the generated output and hands it to Firebase.</span></div>
+              </div>
             </div>
           </div>
 
@@ -963,7 +1022,8 @@ OK Firebase emulators started</code></pre>
             <div class="filename">firescope build</div>
           </div>
           <pre><code>$ npx firescope build
-OK Built 4 functions into .firescope/functions
+✔ Built 4 functions into .firescope/functions
+  dailySummary, hello, ping, usersCreated
 
 .firescope/functions/
   package.json        # Firebase runtime dependencies
@@ -983,6 +1043,7 @@ storage.rules         # safe generated default when missing
           <h2 id="cta-title">Build Firebase apps without rebuilding the same setup.</h2>
           <p>
             Start with one command, keep Firebase's APIs, and let Firescope handle the framework-shaped glue.
+            Requires Node 22 or newer.
           </p>
         </div>
         <a class="button primary" href="https://github.com/maskjelly/firescope">Get Firescope</a>
@@ -992,8 +1053,32 @@ storage.rules         # safe generated default when missing
     <footer>
       <div class="page footer-inner">
         <div>Firescope is MIT licensed.</div>
-        <div><a href="https://github.com/maskjelly/firescope/releases">Releases</a> / <a href="https://github.com/maskjelly/firescope">GitHub</a></div>
+        <div>
+          <a href="https://www.npmjs.com/package/firescope">npm</a> /
+          <a href="https://github.com/maskjelly/firescope#readme">Docs</a> /
+          <a href="https://github.com/maskjelly/firescope/blob/main/CHANGELOG.md">Changelog</a> /
+          <a href="https://github.com/maskjelly/firescope/blob/main/CONTRIBUTING.md">Contributing</a> /
+          <a href="https://github.com/maskjelly/firescope">GitHub</a>
+        </div>
       </div>
     </footer>
+
+    <script>
+      for (const button of document.querySelectorAll("[data-copy]")) {
+        button.addEventListener("click", async () => {
+          const text = button.dataset.copy ?? ""
+          const original = button.textContent
+          try {
+            await navigator.clipboard.writeText(text)
+            button.textContent = "Copied"
+          } catch {
+            button.textContent = "Select and copy"
+          }
+          setTimeout(() => {
+            button.textContent = original
+          }, 1600)
+        })
+      }
+    </script>
   </body>
 </html>

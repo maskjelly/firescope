@@ -1,0 +1,10 @@
+node_modules
+.firescope
+.firebase
+firebase.json
+.firebaserc
+.env
+.env.*
+!.env.local.example
+*.log
+.DS_Store
