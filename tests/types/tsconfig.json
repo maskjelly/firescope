@@ -1,0 +1,20 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "lib": ["ES2022"],
+    "strict": true,
+    "noEmit": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "types": ["node"],
+    "baseUrl": ".",
+    "paths": {
+      "firescope": ["../../src/index.ts"],
+      "firescope/functions": ["../../src/functions/index.ts"],
+      "firescope/firestore": ["../../src/firestore.ts"]
+    }
+  },
+  "include": ["usage.ts"]
+}
