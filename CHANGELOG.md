@@ -1,8 +1,8 @@
 # Changelog
 
-- Fix custom emulator ports: generate Firebase `{ port }` objects instead of ignored numeric values.
-
 ## Unreleased
+
+- Fix custom emulator ports: generate Firebase `{ port }` objects instead of ignored numeric values.
 
 - Stage builds before publishing: syntax errors preserve the last working bundle and rebuilds preserve installed runtime dependencies.
 - Generate configured Firestore index files and match Functions package engines to the configured runtime.
