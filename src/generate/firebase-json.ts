@@ -7,7 +7,12 @@ export function createFirebaseJson(config: Required<FirescopeConfig>) {
       runtime: config.runtime,
       ignore: ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log"],
     },
-    emulators: config.emulators,
+    emulators: Object.fromEntries(
+      Object.entries(config.emulators).map(([name, value]) => [
+        name,
+        typeof value === "number" ? { port: value } : value,
+      ]),
+    ),
   }
 
   if (config.firestore !== false) {

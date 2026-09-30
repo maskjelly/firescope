@@ -9,7 +9,8 @@
     "check": "tsc --noEmit",
     "connect": "firescope connect",
     "deploy": "firescope deploy",
-    "doctor": "firescope doctor"
+    "doctor": "firescope doctor",
+    "test:emulators": "npm run build && firebase emulators:exec --only functions,firestore,hosting --project demo-firescope \"node tests/emulator-smoke.mjs\""
   },
   "dependencies": {
     "firescope": "file:../..",

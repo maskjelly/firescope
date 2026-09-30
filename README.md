@@ -7,6 +7,9 @@
 [![license](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![node](https://img.shields.io/badge/node-%3E%3D22-brightgreen.svg)](https://nodejs.org)
 
+- **SDK reference:** [exports, handlers, typing and security](docs/sdk.md)
+- **Local verification:** [commands and expected responses](docs/local-development.md)
+- **Deploy and rollback:** [operations guide](docs/deployment.md)
 - **Docs site:** https://maskjelly.github.io/firescope/
 - **Example app:** [`examples/basic`](./examples/basic)
 - **Changelog:** [`CHANGELOG.md`](./CHANGELOG.md)

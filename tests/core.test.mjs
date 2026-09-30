@@ -350,6 +350,7 @@ export default firestore.document("users/{userId}").onCreate(async ({ event }) =
   assert.equal(firebaseJson.functions.source, ".firescope/functions")
   assert.equal(firebaseJson.functions.runtime, "nodejs22")
   assert.equal(firebaseJson.emulators.singleProjectMode, true)
+  assert.deepEqual(firebaseJson.emulators.firestore, { port: 8080 })
   assert.deepEqual(JSON.parse(await readFile(join(cwd, ".firebaserc"), "utf8")), { projects: { default: "demo-e2e" } })
 
   assert.match(entry, /setGlobalOptions/)
@@ -406,4 +407,45 @@ test("cli reports its version and lists commands in help", () => {
   const help = execFileSync(process.execPath, [cli, "--help"], { encoding: "utf8" })
   assert.match(help, /Usage: firescope <command> \[options\]/)
   assert.match(help, /doctor/)
+})
+
+test("rebuild preserves dependencies and failed builds retain the working bundle", async () => {
+  const cwd = await tempProject()
+  await mkdir(join(cwd, "src/functions"), { recursive: true })
+  await writeFile(
+    join(cwd, "firescope.config.mjs"),
+    'export default { runtime: "nodejs24", firestore: { indexes: "firestore.indexes.json" } }\n',
+  )
+  const source = join(cwd, "src/functions/hello.ts")
+  await writeFile(source, "export default { version: 1 }\n")
+  const context = { cwd, args: [], flags: new Map(), raw: [] }
+  await buildCommand(context)
+  const root = join(cwd, ".firescope/functions")
+  await mkdir(join(root, "node_modules"))
+  await writeFile(join(root, "node_modules/keep"), "installed")
+  await writeFile(source, "export default { version: 2 }\n")
+  await buildCommand(context)
+  assert.equal(await readFile(join(root, "node_modules/keep"), "utf8"), "installed")
+  assert.equal(JSON.parse(await readFile(join(root, "package.json"))).engines.node, "24")
+  const previous = await readFile(join(root, "lib/index.js"), "utf8")
+  await writeFile(source, "export default { broken: ; }\n")
+  await assert.rejects(buildCommand(context))
+  assert.equal(await readFile(join(root, "lib/index.js"), "utf8"), previous)
+  assert.deepEqual(JSON.parse(await readFile(join(cwd, "firestore.indexes.json"))), { indexes: [], fieldOverrides: [] })
+  await writeFile(join(cwd, "firestore.indexes.json"), '{"indexes":[{"custom":true}]}')
+  await writeFile(source, "export default {}\n")
+  await buildCommand(context)
+  assert.deepEqual(JSON.parse(await readFile(join(cwd, "firestore.indexes.json"))).indexes, [{ custom: true }])
+})
+
+test("signal termination is a command failure", async () => {
+  const { run } = await import("../dist/cli/process.js")
+  const result = await run(process.execPath, ["-e", "process.kill(process.pid, 'SIGTERM')"])
+  assert.notEqual(result.code, 0)
+})
+
+test("envInt rejects values beyond safe integer range", () => {
+  process.env.FIRESCOPE_UNSAFE_INT = "9007199254740993"
+  assert.throws(() => envInt("FIRESCOPE_UNSAFE_INT"), /safe integer/)
+  delete process.env.FIRESCOPE_UNSAFE_INT
 })

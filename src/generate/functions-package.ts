@@ -1,10 +1,11 @@
 import { readFile } from "node:fs/promises"
+import { scaffoldVersions } from "../scaffold/versions.js"
 import { nearestPackageJson } from "../cli/fs.js"
 
-export async function createFunctionsPackage(cwd: string) {
+export async function createFunctionsPackage(cwd: string, runtime = "nodejs22") {
   const packagePath = await nearestPackageJson(cwd)
-  let firebaseAdminVersion = "^13.0.2"
-  let firebaseFunctionsVersion = "^6.2.0"
+  let firebaseAdminVersion = scaffoldVersions.firebaseAdmin
+  let firebaseFunctionsVersion = scaffoldVersions.firebaseFunctions
 
   if (packagePath) {
     const pkg = JSON.parse(await readFile(packagePath, "utf8")) as {
@@ -27,7 +28,7 @@ export async function createFunctionsPackage(cwd: string) {
       "firebase-functions": firebaseFunctionsVersion,
     },
     engines: {
-      node: ">=22",
+      node: runtime.replace("nodejs", ""),
     },
   }
 }

@@ -49,7 +49,9 @@
   },
   "types": "./dist/index.d.ts",
   "files": [
-    "dist"
+    "dist",
+    "docs/*.md",
+    "examples/basic"
   ],
   "scripts": {
     "build": "tsc",

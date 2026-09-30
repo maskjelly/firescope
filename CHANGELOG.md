@@ -1,5 +1,14 @@
 # Changelog
 
+- Fix custom emulator ports: generate Firebase `{ port }` objects instead of ignored numeric values.
+
+## Unreleased
+
+- Stage builds before publishing: syntax errors preserve the last working bundle and rebuilds preserve installed runtime dependencies.
+- Generate configured Firestore index files and match Functions package engines to the configured runtime.
+- Treat signal-killed commands as failures; handle watcher errors and reject unsafe integer environment values.
+- Add SDK reference, a tested local workflow, and release/deployment checks.
+
 All notable changes to Firescope are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),

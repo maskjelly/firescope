@@ -58,7 +58,7 @@ export function run(command: string, args: string[], options: RunOptions = {}): 
     child.stderr?.on("data", (chunk) => (stderr += String(chunk)))
 
     child.on("error", (error) => reject(error))
-    child.on("close", (code) => resolve({ code: code ?? 0, stdout, stderr }))
+    child.on("close", (code) => resolve({ code: code ?? 1, stdout, stderr }))
   })
 }
 

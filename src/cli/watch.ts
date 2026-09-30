@@ -18,8 +18,10 @@ export async function watchSources(context: CliContext, config: Required<Firesco
   let timer: NodeJS.Timeout | undefined
   let building = false
   let queued = false
+  let closed = false
 
   const rebuild = async () => {
+    if (closed) return
     if (building) {
       queued = true
       return
@@ -41,6 +43,7 @@ export async function watchSources(context: CliContext, config: Required<Firesco
   }
 
   const schedule = () => {
+    if (closed) return
     if (timer) clearTimeout(timer)
     timer = setTimeout(() => void rebuild(), rebuildDelay)
   }
@@ -49,7 +52,14 @@ export async function watchSources(context: CliContext, config: Required<Firesco
 
   for (const path of paths) {
     try {
-      watchers.push(watch(path, { recursive: true }, schedule))
+      const watcher = watch(path, { recursive: true }, schedule)
+      watcher.on("error", (error) => {
+        log.warn(
+          `Watcher failed for ${relative(context.cwd, path)}: ${error.message}. Restart dev after fixing the watch limit.`,
+        )
+        watcher.close()
+      })
+      watchers.push(watcher)
     } catch {
       log.warn(`Could not watch ${relative(context.cwd, path) || path} for changes`)
     }
@@ -58,6 +68,7 @@ export async function watchSources(context: CliContext, config: Required<Firesco
   log.info(color.dim(`Watching ${relative(context.cwd, watchRoot) || "."} for changes`))
 
   return () => {
+    closed = true
     if (timer) clearTimeout(timer)
     for (const watcher of watchers) watcher.close()
   }

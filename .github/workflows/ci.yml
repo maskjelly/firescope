@@ -41,3 +41,24 @@ jobs:
 
       - name: Pack
         run: npm pack
+
+  emulator:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 21
+      - run: npm ci
+      - run: npm run build
+      - run: npm install
+        working-directory: examples/basic
+      - run: npm run check
+        working-directory: examples/basic
+      - run: npm run test:emulators
+        working-directory: examples/basic

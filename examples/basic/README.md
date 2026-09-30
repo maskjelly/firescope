@@ -25,3 +25,7 @@ public/                      static hosting files
 ```
 
 `npm run build` writes the deployable output to `.firescope/functions` and regenerates `firebase.json`.
+
+## Verify the full local loop
+
+With Node 22 and a compatible Java runtime installed, run `npm run test:emulators`. It starts disposable Functions, Firestore and Hosting emulators, verifies HTTP and callable responses, writes a typed user document, and waits for its audit trigger. Use an empty emulator database for this test.

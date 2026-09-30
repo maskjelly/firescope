@@ -52,7 +52,11 @@ export function envInt(name: string, options: EnvOptions = {}): number {
     throw new Error(`Environment variable ${name} must be an integer (received "${value}")`)
   }
 
-  return Number.parseInt(value, 10)
+  const result = Number(value)
+  if (!Number.isSafeInteger(result)) {
+    throw new Error(`Environment variable ${name} must be a safe integer`)
+  }
+  return result
 }
 
 export function envBool(name: string, options: EnvOptions = {}): boolean {
